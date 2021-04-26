@@ -46,8 +46,8 @@ m.btl_fac = Var(RangeSet(fac_centers),domain=NonNegativeReals)
 m.btl_dist = Var(RangeSet(dist_centers),domain=NonNegativeReals)
 m.g = Var(RangeSet(comp_centers),domain=NonNegativeReals)
 m.h = Var(RangeSet(fac_centers),domain=NonNegativeReals)
-m.x = Var(RangeSet(comp_centers),RangeSet(fac_centers),domain=NonNegativeReals)
-m.y = Var(RangeSet(fac_centers),RangeSet(dist_centers),domain=NonNegativeReals)
+m.x = Var(RangeSet(comp_centers),RangeSet(fac_centers),domain=NonNegativeIntegers)
+m.y = Var(RangeSet(fac_centers),RangeSet(dist_centers),domain=NonNegativeIntegers)
 m.TP_fc = Var(RangeSet(comp_centers),RangeSet(fac_centers),domain=NonNegativeReals)
 m.TP_df = Var(RangeSet(fac_centers),RangeSet(dist_centers),domain=NonNegativeReals)
 
@@ -117,8 +117,16 @@ for k in range(dist_centers):
 # Objective
 m.obj = Objective(expr = sum((1-n[i])*m.btp_comp[i+1]-m.btl_comp[i+1] for i in range(comp_centers))+sum((1-m1[j])*m.btp_fac[j+1]-m.btl_fac[j+1] for j in range(fac_centers))+sum((1-r[k])*m.btp_dist[k+1]-m.btl_dist[k+1] for k in range(dist_centers)),sense=maximize)
 
+# Solving the model
+opt = SolverFactory('cplex')
+results = opt.solve(m,tee=True)
+print("Solver status:", results.solver.status)
+print("Solver termination condition:", results.solver.termination_condition)
 
-
+# Printing resutls
+for i in range(comp_centers):
+    for j in range(fac_centers):
+        print(i+1,j+1,m.x[i+1,j+1].value)
 
 
 
