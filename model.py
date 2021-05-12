@@ -115,7 +115,9 @@ for k in range(dist_centers):
     m.dist_btp_cons.add(expr= m.btp_dist[k+1]-m.btl_dist[k+1] == sum((s[k]*m.y[j+1,k+1]-m.TP_df[j+1,k+1]-(1-f_df)*b[j][k]*m.y[j+1,k+1])for j in range(fac_centers)))
     
 # Objective
-m.obj = Objective(expr = sum((1-n[i])*m.btp_comp[i+1]-m.btl_comp[i+1] for i in range(comp_centers))+sum((1-m1[j])*m.btp_fac[j+1]-m.btl_fac[j+1] for j in range(fac_centers))+sum((1-r[k])*m.btp_dist[k+1]-m.btl_dist[k+1] for k in range(dist_centers)),sense=maximize)
+#m.obj = Objective(expr = sum((1-n[i])*m.btp_comp[i+1]-m.btl_comp[i+1] for i in range(comp_centers))+sum((1-m1[j])*m.btp_fac[j+1]-m.btl_fac[j+1] for j in range(fac_centers))+sum((1-r[k])*m.btp_dist[k+1]-m.btl_dist[k+1] for k in range(dist_centers)),sense=maximize)
+
+m.obj = Objective(expr = sum((n[i])*m.btp_comp[i+1]-m.btl_comp[i+1] for i in range(comp_centers))+sum((m1[j])*m.btp_fac[j+1]-m.btl_fac[j+1] for j in range(fac_centers))+sum((r[k])*m.btp_dist[k+1]-m.btl_dist[k+1] for k in range(dist_centers)),sense=maximize)
 
 # Solving the model
 opt = SolverFactory('cplex')
@@ -129,4 +131,20 @@ for i in range(comp_centers):
         print(i+1,j+1,m.x[i+1,j+1].value)
 
 
-
+# Production quantities - components
+for i in range(comp_centers):
+    print(i+1,m.g[i+1].value)
+    
+# Production quantities - finished goods
+for j in range(fac_centers):
+    print(j+1,m.h[j+1].value)
+    
+# Quantities from facilities to distribution centers
+for j in range(fac_centers):
+    for k in range(dist_centers):
+        print(j+1,k+1,m.y[j+1,k+1].value)
+        
+# Quantities from facilities to distribution centers
+for j in range(fac_centers):
+    for k in range(dist_centers):
+        print(j+1,k+1,m.y[j+1,k+1].value)
